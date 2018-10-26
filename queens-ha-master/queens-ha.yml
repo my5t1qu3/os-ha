@@ -2,9 +2,9 @@
 - name: apply the environment configurations to all controllers
   hosts: controllers
   roles:
-#  - env
+  - env
 #  - mariadb
-  - rabbitmq
+#  - rabbitmq
 #  - haproxy
 #  - pcspf
 
@@ -18,5 +18,9 @@
   roles:
 #  - keystone
 #  - glance
-  - nova
+#  - nova
 
+- name: apply the openstack configurations to all compute
+  hosts: computes
+  roles:
+  - nova-compute

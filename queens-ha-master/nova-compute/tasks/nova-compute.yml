@@ -1,0 +1,50 @@
+---
+- name: install required repos
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - centos-release-openstack-queens
+    - epel-release
+
+- name: update all packages
+  yum: name=* state=latest
+
+- name: install required packages
+  yum: name="{{ packages }}" state=latest
+  vars:
+    packages:
+    - vim
+    - htop
+    - crudini
+    - rsync
+    - policycoreutils-python
+    - xinetd
+    - python-openstackclient
+    - openstack-selinux
+    - python2-openstacksdk
+    - python2-shade
+
+- name: install chrony
+  yum: name=chrony state=latest
+
+- name: start chronyd
+  service: name=chronyd state=started
+
+- name: copy host resolver
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: insert firewalld nova compute api rule
+  firewalld: port=8774/tcp permanent=true state=enabled immediate=yes
+
+- name: install nova-compute package
+  yum: name=openstack-nova-compute state=latest
+
+- name: create nova configuration file
+  template: src=nova.conf.compute.j2 dest=/etc/nova/nova.conf
+  notify: restart nova-compute services
+
+- name: start libvirtd service
+  service: name=libvirtd state=started enabled=yes
+
+- name: start nova-compute service
+  service: name=openstack-nova-compute state=started enabled=yes

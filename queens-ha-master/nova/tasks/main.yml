@@ -1,3 +1,4 @@
 ---
 # tasks file for nova
 - import_tasks: nova.yml
+- import_tasks: nova-compute.yml
